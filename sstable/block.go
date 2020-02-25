@@ -7,6 +7,7 @@ package sstable
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"unsafe"
 
 	"github.com/cockroachdb/pebble/internal/base"
@@ -250,11 +251,19 @@ func newBlockIter(cmp Compare, block block) (*blockIter, error) {
 	return i, i.init(cmp, block, 0)
 }
 
+func (i *blockIter) String() string {
+	if !i.Valid() {
+		return "key=<nil>"
+	}
+	return fmt.Sprintf("key=%s", i.ikey)
+}
+
 func (i *blockIter) init(cmp Compare, block block, globalSeqNum uint64) error {
 	numRestarts := int32(binary.LittleEndian.Uint32(block[len(block)-4:]))
 	if numRestarts == 0 {
 		return errors.New("pebble/table: invalid table (block has no restart points)")
 	}
+	i.offset = -1
 	i.cmp = cmp
 	i.restarts = int32(len(block)) - 4*(1+numRestarts)
 	i.numRestarts = numRestarts
@@ -275,7 +284,7 @@ func (i *blockIter) initHandle(cmp Compare, block cache.Handle, globalSeqNum uin
 
 func (i *blockIter) invalidate() {
 	i.clearCache()
-	i.offset = 0
+	i.offset = -1
 	i.nextOffset = 0
 	i.restarts = 0
 	i.numRestarts = 0

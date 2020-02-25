@@ -19,6 +19,7 @@ package arenaskl
 
 import (
 	"encoding/binary"
+	"fmt"
 	"sync"
 
 	"github.com/cockroachdb/pebble/internal/base"
@@ -62,6 +63,18 @@ func (it *Iterator) Close() error {
 	it.upper = nil
 	iterPool.Put(it)
 	return nil
+}
+
+// Valid returns true if the iterator is positioned at a valid node.
+func (it *Iterator) Valid() bool {
+	return it.list != nil && it.nd != it.list.head && it.nd != it.list.tail
+}
+
+func (it *Iterator) String() string {
+	if !it.Valid() {
+		return "key=<nil>"
+	}
+	return fmt.Sprintf("key=%s", it.key)
 }
 
 // Error returns any accumulated error.

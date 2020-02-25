@@ -17,7 +17,11 @@
 
 package batchskl
 
-import "github.com/cockroachdb/pebble/internal/base"
+import (
+	"fmt"
+
+	"github.com/cockroachdb/pebble/internal/base"
+)
 
 type splice struct {
 	prev uint32
@@ -172,6 +176,13 @@ func (it *Iterator) Tail() bool {
 // Valid returns nil iff the iterator is positioned at a valid node.
 func (it *Iterator) Valid() bool {
 	return it.list != nil && it.nd != it.list.head && it.nd != it.list.tail
+}
+
+func (it *Iterator) String() string {
+	if !it.Valid() {
+		return "key=<nil>"
+	}
+	return fmt.Sprintf("key=%s", it.key)
 }
 
 // SetBounds sets the lower and upper bounds for the iterator. Note that the

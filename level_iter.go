@@ -5,6 +5,7 @@
 package pebble
 
 import (
+	"fmt"
 	"runtime/debug"
 	"sort"
 
@@ -611,4 +612,11 @@ func (l *levelIter) SetBounds(lower, upper []byte) {
 	}
 
 	l.iter.SetBounds(l.tableOpts.LowerBound, l.tableOpts.UpperBound)
+}
+
+func (l *levelIter) String() string {
+	if l.index >= 0 && l.index < len(l.files) {
+		return fmt.Sprintf("file=%v", l.files[l.index])
+	}
+	return "file=<nil>"
 }

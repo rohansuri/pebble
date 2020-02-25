@@ -787,6 +787,13 @@ func (m *mergingIter) seekGE(key []byte, level int) {
 	m.initMinHeap()
 }
 
+func (m *mergingIter) String() string {
+	if len(m.heap.items) > 0 {
+		return fmt.Sprintf("heap=%s, err=%v, dir=%d", m.heap.items[0].key, m.err, m.dir)
+	}
+	return fmt.Sprintf("err=%v, dir=%d", m.err, m.dir)
+}
+
 // SeekGE implements base.InternalIterator.SeekGE. Note that SeekGE only checks
 // the upper bound. It is up to the caller to ensure that key is greater than
 // or equal to the lower bound.

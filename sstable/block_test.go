@@ -130,6 +130,19 @@ func TestBlockIter(t *testing.T) {
 	}
 }
 
+func TestUnpositionedBlockIter(t *testing.T) {
+	w := &blockWriter{restartInterval: 1}
+	w.add(base.MakeInternalKey([]byte("key"), 1, InternalKeyKindSet), nil)
+	block := w.finish()
+	iter, err := newBlockIter(bytes.Compare, block)
+	if err != nil {
+		t.Fatalf("got err=%v", err.Error())
+	}
+	if iter.Valid() {
+		t.Fatal("unpositioned blockIter should be invalid")
+	}
+}
+
 func TestBlockIter2(t *testing.T) {
 	makeIkey := func(s string) InternalKey {
 		j := strings.Index(s, ":")
